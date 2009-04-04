@@ -9,8 +9,10 @@ Hoe.new('bakker', Bakker::VERSION) do |p|
   p.developer('Alexander E. Fischer', 'aef@raxys.net')
   p.extra_dev_deps = %w{user-choices sys-uname}
   p.url = 'https://rubyforge.org/projects/aef/'
+  p.readme_file = 'README.rdoc'
+  p.extra_rdoc_files = %w{README.rdoc}
   p.spec_extras = {
-    :rdoc_options => ['--main', 'README.txt', '--inline-source', '--line-numbers', '--title', 'Bakker']
+    :rdoc_options => ['--main', 'README.rdoc', '--inline-source', '--line-numbers', '--title', 'Bakker']
   }
 end
 

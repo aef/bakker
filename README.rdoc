@@ -2,14 +2,15 @@
 
 * Project: https://rubyforge.org/projects/aef/
 * RDoc: http://aef.rubyforge.org/bakker/
+* Github: http://github.com/aef/bakker/
 
 == DESCRIPTION:
 
-Bakker was created to help with simple task of renaming or copying files for
-quick backup purposes. For instance by creating a copy of a list of files
-while adding .bak to the copies filenames. Bakker gives you control over the
-extension to be added to or removed from the file and whether it should be
-moved or copied.
+Bakker is a Ruby library and commandline tool to help with simple task of
+renaming or copying files for quick backup purposes. For instance by creating
+a copy of a list of files while adding .bak to the copies filenames. Bakker
+gives you control over the extension to be added to or removed from the file
+and whether it should be moved or copied.
 
 == FEATURES/PROBLEMS:
 
@@ -107,13 +108,14 @@ Call Bakker:
 
 == REQUIREMENTS:
 
-* For commandline use:
-  * user-choices
+* rubygems
 
-* For automated testing:
-  * user-choices (for commandline tool only)
-  * rspec (for testing only)
-  * sys-uname (for testing only)
+=== Additional for commandline
+* user-choices
+
+=== Additional for automated testing
+* rspec
+* sys-uname
 
 == INSTALL:
 
@@ -159,6 +161,24 @@ to start the test runner:
   rake spec
 
 If something goes wrong you should be noticed through failing examples.
+
+== DEVELOPMENT:
+
+This software is developed in the source code management system git hosted
+at github.com. You can download the most recent sourcecode through the following
+command:
+
+  git clone git://github.com/aef/bakker.git
+
+Help on making this software better is always very appreciated. If you want your
+changes to be included in the official release, please send me a patch through
+the project's tracker[https://rubyforge.org/tracker/?group_id=7890] at
+rubyforge.org. You can generate a patch-file by the following command:
+
+  git diff > patch.diff
+
+Please make sure to write tests for your changes and notice that I can't promise
+to include your changes before reviewing them.
 
 == LICENSE:
 

@@ -19,6 +19,8 @@ require 'fileutils'
 
 class BakkerWarning < StandardError; end
 
+# Bakker is a Ruby library and commandline tool to help with simple task of
+# renaming or copying files for quick backup purposes.
 module Bakker
   VERSION = '1.0.1'
   DEFAULT_EXTENSION = '.bak'
