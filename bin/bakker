@@ -93,14 +93,27 @@ class Bakker::Application < UserChoices::Command
     builder.add_choice(:filenames) {|cli| cli.uses_arglist }
   end
 
+  # Manual option post processing
+  def postprocess_user_choices
+    version if @user_choices[:version]
+  end
+
+  # Version and licensing information output
+  def version
+    klass = Bakker
+    puts "#{klass.name} #{klass::VERSION}"
+    puts
+    puts 'Project: https://rubyforge.org/projects/aef/'
+    puts "RDoc: http://aef.rubyforge.org/#{klass.name.downcase}/"
+    puts
+    puts 'Copyright 2009 Alexander E. Fischer <aef@raxys.net>'
+    # Read and print licensing information from the top of this file
+    puts File.read(__FILE__).lines.map{|line| line[2..-1]}[5..17]
+    exit
+  end
+
   # Main program
   def execute
-    if @user_choices[:version]
-      klass = Bakker
-      puts "\n#{klass.name} #{klass::VERSION}"
-      puts DATA.read; exit
-    end
-    
     if @user_choices[:filenames].empty?
       warn 'No files given'; exit false
     else
@@ -117,23 +130,3 @@ class Bakker::Application < UserChoices::Command
 end
 
 S4tUtils.with_pleasant_exceptions {Bakker::Application.new.execute}
-
-__END__
-
-Project: https://rubyforge.org/projects/aef/
-RDoc: http://aef.rubyforge.org/bakker/
-
-Copyright 2009 Alexander E. Fischer <aef@raxys.net>
-
-Bakker is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.

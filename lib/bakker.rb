@@ -20,13 +20,15 @@ require 'fileutils'
 class BakkerWarning < StandardError; end
 
 module Bakker
-  VERSION = '1.0.0'
+  VERSION = '1.0.1'
   DEFAULT_EXTENSION = '.bak'
   MODES = [:toggle, :add, :remove]
   ACTIONS = [:move, :copy]
 
+  module_function
+
   # For possible options see FileUtils methods cp() and mv()
-  def self.process(filename, extension = DEFAULT_EXTENSION, mode = MODES.first, action = ACTIONS.first, options = {})
+  def process(filename, extension = DEFAULT_EXTENSION, mode = MODES.first, action = ACTIONS.first, options = {})
     raise ArgumentError, 'Action can only be :copy or :move.' unless ACTIONS.include?(action)
     raise ArgumentError, 'Mode can only be :toggle, :add or :remove.' unless MODES.include?(mode)
 
