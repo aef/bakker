@@ -5,4 +5,5 @@ COPYING.txt
 Rakefile
 bin/bakker
 lib/bakker.rb
+lib/bakker/bakker.rb
 spec/bakker_spec.rb

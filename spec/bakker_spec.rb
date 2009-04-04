@@ -26,8 +26,8 @@ require 'sys/uname'
 module BakkerSpecHelper
   # If there is a way to get the executable path of the currently running ruby
   # interpreter, please tell me how.
-  warn 'Attention: If the ruby interpreter to be tested with is not ruby in the' +
-       'default path, you have to change this manually in spec/bakker_spec.rb'
+  warn 'Attention: If the ruby interpreter to be tested with is not ruby in the ' +
+       "default path, you have to change this manually in #{__FILE__} line #{__LINE__ + 1}"
   RUBY_PATH = 'ruby'
 
   def tempfile_path(name, options = {})
@@ -47,7 +47,7 @@ module BakkerSpecHelper
   end
 end
 
-describe Bakker do
+describe Aef::Bakker do
   include BakkerSpecHelper
 
   before(:each) do
@@ -63,8 +63,8 @@ describe Bakker do
       source_path = tempfile_path('abc')
 
       lambda {
-        Bakker.process(source_path)
-      }.should raise_error(BakkerWarning)
+        Aef::Bakker.process(source_path)
+      }.should raise_error(Aef::BakkerWarning)
     end
 
     it "should throw an exception when source and target file do exist" do
@@ -72,8 +72,8 @@ describe Bakker do
       target_path = tempfile_path('abc.bak', :create => true)
 
       lambda {
-        Bakker.process(source_path)
-      }.should raise_error(BakkerWarning)
+        Aef::Bakker.process(source_path)
+      }.should raise_error(Aef::BakkerWarning)
     end
 
     it "should extend a non-extended file correctly" do
@@ -81,7 +81,7 @@ describe Bakker do
       target_path = tempfile_path('def.bak')
 
       lambda {
-        Bakker.process(source_path, '.bak', :toggle, :move)
+        Aef::Bakker.process(source_path, '.bak', :toggle, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -91,7 +91,7 @@ describe Bakker do
       target_path = tempfile_path('def.bak')
 
       lambda {
-        Bakker.process(target_path, '.bak', :toggle, :move)
+        Aef::Bakker.process(target_path, '.bak', :toggle, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -101,7 +101,7 @@ describe Bakker do
       target_path = tempfile_path('abc.ext')
 
       lambda {
-        Bakker.process(source_path, '.ext', :remove, :move)
+        Aef::Bakker.process(source_path, '.ext', :remove, :move)
       }.should_not change{ File.exist?(target_path) == false } and
                    change{ File.exist?(source_path) == true }
     end
@@ -111,7 +111,7 @@ describe Bakker do
       target_path = tempfile_path('abc.ext')
 
       lambda {
-        Bakker.process(target_path, '.ext', :remove, :move)
+        Aef::Bakker.process(target_path, '.ext', :remove, :move)
       }.should_not change{ File.exist?(target_path) == false } and
                    change{ File.exist?(source_path) == true }
     end
@@ -121,7 +121,7 @@ describe Bakker do
       target_path = tempfile_path('abc.ext')
 
       lambda {
-        Bakker.process(source_path, '.ext', :add, :move)
+        Aef::Bakker.process(source_path, '.ext', :add, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -131,7 +131,7 @@ describe Bakker do
       target_path = tempfile_path('abc.ext')
 
       lambda {
-        Bakker.process(source_path, '.ext', :add, :move)
+        Aef::Bakker.process(source_path, '.ext', :add, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -141,7 +141,7 @@ describe Bakker do
       target_path = tempfile_path('xyz.tar.gz')
 
       lambda {
-        Bakker.process(source_path, '.tar.gz', :toggle, :copy)
+        Aef::Bakker.process(source_path, '.tar.gz', :toggle, :copy)
       }.should change{ File.exists?(target_path) }.from(false).to(true) and
                not change{ File.exists?(source_path) == true }
     end
@@ -151,7 +151,7 @@ describe Bakker do
       target_path = tempfile_path('xyz.tar.gz')
 
       lambda {
-        Bakker.process(target_path, '.tar.gz', :toggle, :copy)
+        Aef::Bakker.process(target_path, '.tar.gz', :toggle, :copy)
       }.should change{ File.exists?(target_path) }.from(false).to(true) and
                not change{ File.exists?(source_path) == true }
     end
@@ -161,7 +161,7 @@ describe Bakker do
       target_path = tempfile_path('xyz')
 
       lambda {
-        Bakker.process(source_path, '.zirbel', :toggle, :move)
+        Aef::Bakker.process(source_path, '.zirbel', :toggle, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -171,7 +171,7 @@ describe Bakker do
       target_path = tempfile_path('xyz')
 
       lambda {
-        Bakker.process(target_path, '.zirbel', :toggle, :move)
+        Aef::Bakker.process(target_path, '.zirbel', :toggle, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -181,7 +181,7 @@ describe Bakker do
       target_path = tempfile_path('1234')
 
       lambda {
-        Bakker.process(source_path, '.bak', :add, :move)
+        Aef::Bakker.process(source_path, '.bak', :add, :move)
       }.should_not change{ File.exist?(target_path) == false } and
                    change{ File.exist?(source_path) == true }
     end
@@ -191,7 +191,7 @@ describe Bakker do
       target_path = tempfile_path('1234')
 
       lambda {
-        Bakker.process(target_path, '.bak', :add, :move)
+        Aef::Bakker.process(target_path, '.bak', :add, :move)
       }.should_not change{ File.exist?(target_path) == false } and
                    change{ File.exist?(source_path) == true }
     end
@@ -201,7 +201,7 @@ describe Bakker do
       target_path = tempfile_path('testfile')
 
       lambda {
-        Bakker.process(source_path, '.1234', :remove, :move)
+        Aef::Bakker.process(source_path, '.1234', :remove, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -211,7 +211,7 @@ describe Bakker do
       target_path = tempfile_path('testfile')
 
       lambda {
-        Bakker.process(target_path, '.1234', :remove, :move)
+        Aef::Bakker.process(target_path, '.1234', :remove, :move)
       }.should change{ File.exist?(target_path) }.from(false).to(true) and
                change{ File.exist?(source_path) }.from(true).to(false)
     end
@@ -221,7 +221,7 @@ describe Bakker do
       target_path = tempfile_path('demo')
 
       lambda {
-        Bakker.process(source_path, '.exe', :toggle, :copy)
+        Aef::Bakker.process(source_path, '.exe', :toggle, :copy)
       }.should change{ File.exists?(target_path) }.from(false).to(true) and
                not change{ File.exists?(source_path) == true }
     end
@@ -231,7 +231,7 @@ describe Bakker do
       target_path = tempfile_path('demo')
 
       lambda {
-        Bakker.process(target_path, '.exe', :toggle, :copy)
+        Aef::Bakker.process(target_path, '.exe', :toggle, :copy)
       }.should change{ File.exists?(target_path) }.from(false).to(true) and
                not change{ File.exists?(source_path) == true }
     end

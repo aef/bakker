@@ -37,7 +37,7 @@ rescue LoadError
 end
 
 # Application class for commandline interface
-class Bakker::Application < UserChoices::Command
+class Aef::Bakker::Application < UserChoices::Command
   include UserChoices
 
   # Prepare configuration sources
@@ -45,8 +45,8 @@ class Bakker::Application < UserChoices::Command
     builder.add_source(CommandLineSource, :usage,
       "Usage: #$PROGRAM_NAME [options] files\n\n",
       "You can set the default behavior through environment variables:\n",
-      "BAKKER_MODE (#{Bakker::MODES.join(', ')}. Default: #{Bakker::MODES.first})",
-      "BAKKER_ACTION (#{Bakker::ACTIONS.join(', ')}. Default: #{Bakker::ACTIONS.first})",
+      "BAKKER_MODE (#{Aef::Bakker::MODES.join(', ')}. Default: #{Aef::Bakker::MODES.first})",
+      "BAKKER_ACTION (#{Aef::Bakker::ACTIONS.join(', ')}. Default: #{Aef::Bakker::ACTIONS.first})",
       'BAKKER_EXTENSION (Default: .bak)',
       "BAKKER_VERBOSE (true, false. Default: false)\n"
     )
@@ -64,19 +64,19 @@ class Bakker::Application < UserChoices::Command
 
   # Define configuration options
   def add_choices(builder)
-    builder.add_choice(:mode, :type => Bakker::MODES.map{|item| item.to_s}, :default => Bakker::MODES.first.to_s) do |cli|
+    builder.add_choice(:mode, :type => Aef::Bakker::MODES.map{|item| item.to_s}, :default => Aef::Bakker::MODES.first.to_s) do |cli|
       cli.uses_option('-m', '--mode MODE',
-        "Processing mode. Can be one of: #{Bakker::MODES.join(', ')}. " +
-        "Default: #{Bakker::MODES.first}")
+        "Processing mode. Can be one of: #{Aef::Bakker::MODES.join(', ')}. " +
+        "Default: #{Aef::Bakker::MODES.first}")
     end
 
-    builder.add_choice(:action, :type => Bakker::ACTIONS.map{|item| item.to_s}, :default => Bakker::ACTIONS.first.to_s) do |cli|
+    builder.add_choice(:action, :type => Aef::Bakker::ACTIONS.map{|item| item.to_s}, :default => Aef::Bakker::ACTIONS.first.to_s) do |cli|
       cli.uses_option('-a', '--action ACTION',
-        "Filesystem action. Can be one of: #{Bakker::ACTIONS.join(', ')}. " +
-        "Default: #{Bakker::ACTIONS.first}")
+        "Filesystem action. Can be one of: #{Aef::Bakker::ACTIONS.join(', ')}. " +
+        "Default: #{Aef::Bakker::ACTIONS.first}")
     end
 
-    builder.add_choice(:extension, :default => Bakker::DEFAULT_EXTENSION) do |cli|
+    builder.add_choice(:extension, :default => Aef::Bakker::DEFAULT_EXTENSION) do |cli|
       cli.uses_option('-e', '--extension EXTENSION',
         "Suffix to be added/removed"
       )
@@ -100,7 +100,7 @@ class Bakker::Application < UserChoices::Command
 
   # Version and licensing information output
   def version
-    klass = Bakker
+    klass = Aef::Bakker
     puts "#{klass.name} #{klass::VERSION}"
     puts
     puts 'Project: https://rubyforge.org/projects/aef/'
@@ -119,9 +119,9 @@ class Bakker::Application < UserChoices::Command
     else
       @user_choices[:filenames].each do |filename|
         begin
-          Bakker.process(filename, @user_choices[:extension], @user_choices[:mode].to_sym,
+          Aef::Bakker.process(filename, @user_choices[:extension], @user_choices[:mode].to_sym,
             @user_choices[:action].to_sym, { :verbose => @user_choices[:verbose] })
-        rescue BakkerWarning
+        rescue Aef::BakkerWarning
           warn "Ignoring #{filename}: #$!"
         end
       end
@@ -129,4 +129,4 @@ class Bakker::Application < UserChoices::Command
   end
 end
 
-S4tUtils.with_pleasant_exceptions {Bakker::Application.new.execute}
+S4tUtils.with_pleasant_exceptions {Aef::Bakker::Application.new.execute}

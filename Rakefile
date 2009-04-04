@@ -4,7 +4,7 @@ require 'rubygems'
 require 'hoe'
 require './lib/bakker.rb'
 
-Hoe.new('bakker', Bakker::VERSION) do |p|
+Hoe.new('bakker', Aef::Bakker::VERSION) do |p|
   p.rubyforge_name = 'aef'
   p.developer('Alexander E. Fischer', 'aef@raxys.net')
   p.extra_dev_deps = %w{user-choices sys-uname}
