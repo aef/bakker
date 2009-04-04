@@ -1,0 +1,8 @@
+History.txt
+Manifest.txt
+README.txt
+COPYING.txt
+Rakefile
+bin/bakker
+lib/bakker.rb
+spec/bakker_spec.rb

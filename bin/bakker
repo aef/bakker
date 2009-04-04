@@ -1,0 +1,139 @@
+#!/usr/bin/env ruby
+#
+# Copyright 2009 Alexander E. Fischer <aef@raxys.net>
+#
+# This file is part of Bakker.
+#
+# Bakker is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# TODO: If user-choices patch gets accepted, use :one_way => true for --version
+# TODO: If user-choices patch gets accepted, use :upcase for environment variables
+
+# If library is not locally accessible, use gem to include it.
+begin
+  require 'lib/bakker'
+rescue LoadError
+  require 'rubygems'
+  require 'bakker'
+end
+
+# User friendly message if user-choices is not available
+begin
+  require 'user-choices'
+rescue LoadError
+  warn "This command needs the user-choices gem to be installed.\n\nSolution: gem install user-choices"
+  exit false
+end
+
+# Application class for commandline interface
+class Bakker::Application < UserChoices::Command
+  include UserChoices
+
+  # Prepare configuration sources
+  def add_sources(builder)
+    builder.add_source(CommandLineSource, :usage,
+      "Usage: #$PROGRAM_NAME [options] files\n\n",
+      "You can set the default behavior through environment variables:\n",
+      "BAKKER_MODE (#{Bakker::MODES.join(', ')}. Default: #{Bakker::MODES.first})",
+      "BAKKER_ACTION (#{Bakker::ACTIONS.join(', ')}. Default: #{Bakker::ACTIONS.first})",
+      'BAKKER_EXTENSION (Default: .bak)',
+      "BAKKER_VERBOSE (true, false. Default: false)\n"
+    )
+
+    # Hopefully possible with next release of user-choices
+    # builder.add_source(ExtendedEnvironmentSource, :upcase, :with_prefix, 'BAKKER_')
+
+    builder.add_source(EnvironmentSource, :mapping,
+      :mode      => 'BAKKER_MODE',
+      :action    => 'BAKKER_ACTION',
+      :extension => 'BAKKER_EXTENSION',
+      :verbose   => 'BAKKER_VERBOSE'
+    )
+  end
+
+  # Define configuration options
+  def add_choices(builder)
+    builder.add_choice(:mode, :type => Bakker::MODES.map{|item| item.to_s}, :default => Bakker::MODES.first.to_s) do |cli|
+      cli.uses_option('-m', '--mode MODE',
+        "Processing mode. Can be one of: #{Bakker::MODES.join(', ')}. " +
+        "Default: #{Bakker::MODES.first}")
+    end
+
+    builder.add_choice(:action, :type => Bakker::ACTIONS.map{|item| item.to_s}, :default => Bakker::ACTIONS.first.to_s) do |cli|
+      cli.uses_option('-a', '--action ACTION',
+        "Filesystem action. Can be one of: #{Bakker::ACTIONS.join(', ')}. " +
+        "Default: #{Bakker::ACTIONS.first}")
+    end
+
+    builder.add_choice(:extension, :default => Bakker::DEFAULT_EXTENSION) do |cli|
+      cli.uses_option('-e', '--extension EXTENSION',
+        "Suffix to be added/removed"
+      )
+    end
+
+    builder.add_choice(:verbose, :type => :boolean, :default => false) do |cli|
+      cli.uses_switch('-v', '--verbose', 'Log all actions to console')
+    end
+
+    builder.add_choice(:version, :default => false, :type => :boolean) do |cli|
+      cli.uses_switch('--version', 'Display version and licensing information')
+    end
+
+    builder.add_choice(:filenames) {|cli| cli.uses_arglist }
+  end
+
+  # Main program
+  def execute
+    if @user_choices[:version]
+      klass = Bakker
+      puts "\n#{klass.name} #{klass::VERSION}"
+      puts DATA.read; exit
+    end
+    
+    if @user_choices[:filenames].empty?
+      warn 'No files given'; exit false
+    else
+      @user_choices[:filenames].each do |filename|
+        begin
+          Bakker.process(filename, @user_choices[:extension], @user_choices[:mode].to_sym,
+            @user_choices[:action].to_sym, { :verbose => @user_choices[:verbose] })
+        rescue BakkerWarning
+          warn "Ignoring #{filename}: #$!"
+        end
+      end
+    end
+  end
+end
+
+S4tUtils.with_pleasant_exceptions {Bakker::Application.new.execute}
+
+__END__
+
+Project: https://rubyforge.org/projects/aef/
+RDoc: http://aef.rubyforge.org/bakker/
+
+Copyright 2009 Alexander E. Fischer <aef@raxys.net>
+
+Bakker is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
