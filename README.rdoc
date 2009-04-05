@@ -17,6 +17,7 @@ and whether it should be moved or copied.
 * Usable as library and commandline tool
 * Tested and fully working on:
   * Ubuntu Linux 8.10 i386_64 (Ruby 1.8.7 and 1.9.1p0)
+  * Debian GNU/Linux 4.0 i386 (Ruby 1.8.6)
   * On Windows XP i386 (Ruby 1.8.6)
 * On Windows XP i386 (Ruby 1.8.6) there were some problems testing the
   environment variable choices. Two tests are failing but the programs seems
@@ -114,6 +115,7 @@ Call Bakker:
 * user-choices
 
 === Additional for automated testing
+* hoe
 * rspec
 * sys-uname
 
@@ -159,6 +161,10 @@ Go into the root directory of the installed gem and run the following command
 to start the test runner:
 
   rake spec
+
+On Windows systems you have to run the following instead:
+
+  spec spec/**/*_spec.rb
 
 If something goes wrong you should be noticed through failing examples.
 

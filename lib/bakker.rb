@@ -26,4 +26,4 @@ module Aef
 
 end
 
-require 'lib/bakker/bakker'
+require File.join(File.dirname(__FILE__), 'bakker/bakker')

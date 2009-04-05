@@ -22,7 +22,7 @@ class Aef::BakkerWarning < StandardError; end
 # Bakker is a Ruby library and commandline tool to help with simple task of
 # renaming or copying files for quick backup purposes.
 module Aef::Bakker
-  VERSION = '1.0.1'
+  VERSION = '1.1.0'
   DEFAULT_EXTENSION = '.bak'
   MODES = [:toggle, :add, :remove]
   ACTIONS = [:move, :copy]

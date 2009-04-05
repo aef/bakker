@@ -51,7 +51,14 @@ describe Aef::Bakker do
   include BakkerSpecHelper
 
   before(:each) do
-    @folder_path = Dir.mktmpdir('bakker_spec')
+    # Before ruby 1.8.7, the tmpdir standard library had no method to create
+    # a temporary directory (mktmpdir).
+    if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('1.8.7')
+      @folder_path = File.join(Dir.tmpdir, 'bakker_spec')
+      Dir.mkdir(@folder_path)
+    else
+      @folder_path = Dir.mktmpdir('bakker_spec')
+    end
   end
 
   after(:each) do
@@ -459,6 +466,32 @@ describe Aef::Bakker do
         end
       }.should_not change{ File.exists?(target_path) == false } and
                    change{ File.exists?(source_path) == true }
+    end
+
+    it 'should display correct version and licensing information with the --version switch' do
+      message = <<-EOF
+Bakker 1.1.0
+
+Project: https://rubyforge.org/projects/aef/
+RDoc: http://aef.rubyforge.org/bakker/
+Github: http://github.com/aef/bakker/
+
+Copyright 2009 Alexander E. Fischer <aef@raxys.net>
+
+Bakker is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+EOF
+      `#{executable_path} --version`.should eql(message)
     end
   end
 end
