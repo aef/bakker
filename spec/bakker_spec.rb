@@ -21,6 +21,7 @@ require 'tmpdir'
 require 'fileutils'
 
 require 'rubygems'
+require 'file_transfer_matchers'
 require 'sys/uname'
 
 module BakkerSpecHelper
@@ -49,6 +50,7 @@ end
 
 describe Aef::Bakker do
   include BakkerSpecHelper
+  include Aef::FileTransferMatchers
 
   before(:each) do
     # Before ruby 1.8.7, the tmpdir standard library had no method to create
@@ -89,8 +91,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.bak', :toggle, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should extend a non-extended file correctly even if only the target is given" do
@@ -99,8 +100,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.bak', :toggle, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should not extend a non-extended file if mode is remove" do
@@ -109,8 +109,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.ext', :remove, :move)
-      }.should_not change{ File.exist?(target_path) == false } and
-                   change{ File.exist?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
     end
 
     it "should not extend a non-extended file if mode is remove even if only the target is given" do
@@ -119,8 +118,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.ext', :remove, :move)
-      }.should_not change{ File.exist?(target_path) == false } and
-                   change{ File.exist?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
     end
 
     it "should extend a non-extended file if mode is add" do
@@ -129,8 +127,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.ext', :add, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should extend a non-extended file if mode is add even if only the target is given" do
@@ -139,8 +136,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.ext', :add, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should create an extended copy of a non-extended file if action is copy" do
@@ -149,8 +145,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.tar.gz', :toggle, :copy)
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
 
     it "should create an extended copy of a non-extended file if action is copy even if only the target is given" do
@@ -159,8 +154,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.tar.gz', :toggle, :copy)
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
     
     it "should unextend an extended file correctly" do
@@ -169,8 +163,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.zirbel', :toggle, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should unextend an extended file correctly even if only the target is given" do
@@ -179,8 +172,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.zirbel', :toggle, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should not unextend an extended file if mode is add" do
@@ -189,8 +181,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.bak', :add, :move)
-      }.should_not change{ File.exist?(target_path) == false } and
-                   change{ File.exist?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
     end
 
     it "should not unextend an extended file if mode is add even if only the target is given" do
@@ -199,8 +190,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.bak', :add, :move)
-      }.should_not change{ File.exist?(target_path) == false } and
-                   change{ File.exist?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
     end
 
     it "should unextend an extended file if mode is remove" do
@@ -209,8 +199,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.1234', :remove, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should unextend an extended file if mode is remove even if only the target is given" do
@@ -219,8 +208,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.1234', :remove, :move)
-      }.should change{ File.exist?(target_path) }.from(false).to(true) and
-               change{ File.exist?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should create an unextended copy of an extended file if action is copy" do
@@ -229,8 +217,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(source_path, '.exe', :toggle, :copy)
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
 
     it "should create an unextended copy of an extended file if action is copy even if only the target is given" do
@@ -239,8 +226,7 @@ describe Aef::Bakker do
 
       lambda {
         Aef::Bakker.process(target_path, '.exe', :toggle, :copy)
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
   end
 
@@ -251,13 +237,11 @@ describe Aef::Bakker do
       
       lambda {
         `#{executable_path} #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
 
       lambda {
         `#{executable_path} #{target_path}`
-      }.should change{ File.exists?(target_path) }.from(true).to(false) and
-               change{ File.exists?(source_path) }.from(false).to(true)
+      }.should move(target_path, :to => source_path)
     end
 
     it "should use -a to select the action" do
@@ -266,8 +250,7 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} -a copy #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
 
     it "should use --action to select the action" do
@@ -276,8 +259,7 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} --action copy #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
 
     it "should use -e to select an extension" do
@@ -286,8 +268,7 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} -e .zirbel #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should use --extension to select an extension" do
@@ -296,8 +277,7 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} --extension .zirbel #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should use -m to select a processing mode" do
@@ -306,18 +286,15 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} -m remove #{source_path}`
-      }.should_not change{ File.exists?(target_path) == false } and
-                   change{ File.exists?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
 
       lambda {
         `#{executable_path} -m toggle #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
 
       lambda {
         `#{executable_path} -m add #{source_path}`
-      }.should_not change{ File.exists?(target_path) == true } and
-                   change{ File.exists?(source_path) == false }
+      }.should_not move(target_path, :to => source_path)
     end
 
     it "should use --mode to select a processing mode" do
@@ -326,18 +303,15 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} --mode remove #{source_path}`
-      }.should_not change{ File.exists?(target_path) == false } and
-                   change{ File.exists?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
 
       lambda {
         `#{executable_path} --mode toggle #{source_path}`
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
 
       lambda {
         `#{executable_path} --mode add #{source_path}`
-      }.should_not change{ File.exists?(target_path) == true } and
-                   change{ File.exists?(source_path) == false }
+      }.should_not move(target_path, :to => source_path)
     end
 
     it "should allow multiple files as argument" do
@@ -350,12 +324,9 @@ describe Aef::Bakker do
 
       lambda {
         `#{executable_path} #{source_path_a} #{source_path_b} #{source_path_c}`
-      }.should change{ File.exists?(target_path_a) }.from(false).to(true) and
-               change{ File.exists?(source_path_a) }.from(true).to(false) and
-               change{ File.exists?(target_path_b) }.from(false).to(true) and
-               change{ File.exists?(source_path_b) }.from(true).to(false) and
-               change{ File.exists?(target_path_c) }.from(false).to(true) and
-               change{ File.exists?(source_path_c) }.from(true).to(false)
+      }.should move(source_path_a, :to => target_path_a) and
+               move(source_path_b, :to => target_path_b) and
+               move(source_path_c, :to => target_path_c)
     end
 
     it "should accept action config via environment variables" do
@@ -369,8 +340,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_ACTION=copy #{executable_path} #{source_path}`
         end
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               not change{ File.exists?(source_path) == true }
+      }.should copy(source_path, :to => target_path)
     end
 
     it "should prefer commandline setting over environment for action" do
@@ -384,8 +354,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_ACTION=copy #{executable_path} -a move #{source_path}`
         end
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should accept extension config via environment variables" do
@@ -399,8 +368,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_EXTENSION=.zirbel #{executable_path} #{source_path}`
         end
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should prefer commandline setting over environment for extension" do
@@ -414,8 +382,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_EXTENSION=.1234 #{executable_path} -e .zirbel #{source_path}`
         end
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
     end
 
     it "should accept extension config via environment variables" do
@@ -429,8 +396,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_MODE=remove #{executable_path} #{source_path}`
         end
-      }.should_not change{ File.exists?(target_path) == false } and
-                   change{ File.exists?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
 
       lambda {
         if windows?
@@ -439,8 +405,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_MODE=toggle #{executable_path} #{source_path}`
         end
-      }.should change{ File.exists?(target_path) }.from(false).to(true) and
-               change{ File.exists?(source_path) }.from(true).to(false)
+      }.should move(source_path, :to => target_path)
 
       lambda {
         if windows?
@@ -449,8 +414,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_MODE=add #{executable_path} #{source_path}`
         end
-      }.should_not change{ File.exists?(target_path) == true } and
-                   change{ File.exists?(source_path) == false }
+      }.should_not move(target_path, :to => source_path)
     end
 
     it "should prefer commandline setting over environment for mode" do
@@ -464,8 +428,7 @@ describe Aef::Bakker do
         else
           `env BAKKER_MODE=add #{executable_path} -m remove #{source_path}`
         end
-      }.should_not change{ File.exists?(target_path) == false } and
-                   change{ File.exists?(source_path) == true }
+      }.should_not move(source_path, :to => target_path)
     end
 
     it 'should display correct version and licensing information with the --version switch' do
