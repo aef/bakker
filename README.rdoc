@@ -1,6 +1,7 @@
 = Bakker
 
 * Project: https://rubyforge.org/projects/aef/
+* RDoc: http://rdoc.info/projects/aef/bakker/
 * RDoc: http://aef.rubyforge.org/bakker/
 * Github: http://github.com/aef/bakker/
 
